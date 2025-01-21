@@ -1,48 +1,51 @@
-Instrucciones de configuración
-Sigue estos pasos para configurar el proyecto en tu entorno local:
+**Way of Working**
 
-Clonar el repositorio:
+Requisitos tecnológicos
+Para trabajar en este proyecto, solo necesitas tener Docker y Docker Compose instalados en tu máquina. Con estos dos componentes, podrás gestionar tanto la aplicación Laravel como la base de datos MariaDB sin necesidad de instalaciones locales adicionales.
 
+Pasos para preparar el proyecto
+A continuación se detallan los pasos para configurar y poner en marcha la aplicación en tu entorno local usando Docker y Docker Compose.
 
-Copiar
-Editar
-git clone https://github.com/LeoSuarz/ud3.3_ejercicios.git
-cd ud3.3_ejercicios
-Instalar dependencias: Ejecuta Composer para instalar las dependencias del proyecto:
+1. Clonar el repositorio
+Primero, clona el repositorio de GitHub en tu máquina local:
 
-
-Copiar
-Editar
-composer install
-Configurar el entorno: Copia el archivo de configuración .env.example y renómbralo a .env:
+git clone https://github.com/leosuarz/ud3.3_ejercicios.git  
 
 
-Copiar
-Editar
-cp .env.example .env
-Edita el archivo .env y configura las variables de entorno necesarias:
+2. Configuraciones Previas
+El archivo docker-compose.yml ya está correctamente configurado y se encuentra en la raíz del proyecto. Dentro de laravel > laravel-project encontrarás el archivo .env, que también está ya configurado, especialmente la parte de la configuración de MariaDB, donde la base de datos por defecto será gestion_notas. Además, se especifican el puerto y las credenciales de la base de datos:
 
-Configura la conexión a la base de datos:
-env
-Copiar
-Editar
-DB_CONNECTION=sqlite
-DB_DATABASE=/absolute/path/to/database/database.sqlite
-Crear la base de datos: Si usas SQLite, crea el archivo de base de datos vacío:
+DB_CONNECTION=mariadb  
+DB_HOST=mariadb  
+DB_PORT=3306  
+DB_DATABASE=gestion_notas  
+DB_USERNAME=root  
+DB_PASSWORD=m1_s3cr3t
+3. Levantar los contenedores con Docker Compose
+Ejecuta el siguiente comando para levantar tanto la base de datos como la aplicación Laravel en contenedores (asegurate de estar en el directorio ud3.3_ejercicios) :
 
+docker-compose up --build
+Esto iniciará los contenedores según la configuración en docker-compose.yml. La base de datos se levantará en un contenedor de MariaDB, y la aplicación Laravel en otro contenedor.
 
-Copiar
-Editar
-touch database/database.sqlite
-Ejecutar migraciones y seeders: Ejecuta las migraciones para crear las tablas y los seeders para poblarlas con datos de prueba:
+4. Realizar migraciones
+Para crear las tablas en la base de datos, ejecuta las migraciones dentro del contenedor de Laravel:
 
+docker exec -it laravel bash  
+php artisan migrate
+5. Cargar datos de prueba
+Para insertar los datos de prueba configurados en los seeders, ejecuta el siguiente comando:
 
-Copiar
-Editar
-php artisan migrate --seed
-Levantar el servidor local: Inicia el servidor para probar la aplicación:
+php artisan db:seed
+6. Iniciar el servidor de desarrollo
+Si el servidor no se ha iniciado automáticamente, puedes ejecutarlo manualmente:
 
+php artisan serve --host=0.0.0.0
+Esto iniciará el servidor de Laravel en http://127.0.0.1:8000.
 
-Copiar
-Editar
-php artisan serve
+7. Para acceder a MariaDB
+Si necesitas acceder directamente a la base de datos MariaDB desde el contenedor, puedes usar el siguiente comando:
+
+docker exec -it mariadb-server mariadb -u root -p
+Y la contraseña, como aparece más arriba en el archivo .env:
+
+m1_s3cr3t
